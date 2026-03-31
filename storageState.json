@@ -1,0 +1,26 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:4200",
+      "localStorage": [
+        {
+          "name": "tenant",
+          "value": "\"testing\""
+        },
+        {
+          "name": "token",
+          "value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjU3ZDllMjliNmVmNTAzNDU3NWYzNiIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiS2luZyIsImdlbmRlciI6Ik1BTEUiLCJyb2xlIjoiYWRtaW4iLCJ1dWlkIjoiZmJlODRmYzUtZWM1ZS00NmM1LTllMzItYTM1YzZkNTU5NjhhIiwidGVuYW50SWQiOiJ0ZXN0aW5nIiwiaWF0IjoxNzc0ODcwNjc5LCJleHAiOjE3NzQ5NTcwNzl9.euVqDm2ZDB3Jw_YCocwQGfpVBeO3KWwPEBYBT6ba4lc\""
+        },
+        {
+          "name": "t-info",
+          "value": "{\"_id\":\"69257d9f29b6ef5034575f3b\",\"facilityName\":\"Bright Smile Clinic\",\"tenantId\":\"testing\",\"phoneNumber\":\"1234567890\",\"moreInfo\":\"Specializes in cosmetic dentistry and laser treatments.\",\"address\":\"123 Main Street, Springfield\",\"DentalFacilities\":\"Teeth cleaning, root canals, braces\",\"cosmetology\":\"Facials, skin rejuvenation, chemical peels\",\"laserTreatments\":\"Laser hair removal, pigmentation correction\",\"timings\":\"Mon-Fri 9:00 AM - 6:00 PM\",\"clinicLogoUrl\":\"\",\"email\":\"contact@brightsmile.com\",\"disclaimer\":true,\"__v\":0,\"prescriptionTemplate\":\"\",\"billingTemplate\":\"\"}"
+        },
+        {
+          "name": "currentUser",
+          "value": "{\"id\":\"69257d9e29b6ef5034575f36\",\"username\":\"admin\",\"name\":\"King\",\"gender\":\"MALE\",\"role\":\"admin\",\"uuid\":\"fbe84fc5-ec5e-46c5-9e32-a35c6d55968a\",\"tenantId\":\"testing\"}"
+        }
+      ]
+    }
+  ]
+}
