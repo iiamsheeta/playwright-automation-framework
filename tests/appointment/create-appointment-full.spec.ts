@@ -23,7 +23,7 @@ flows.forEach((type) => {
 
     // OR if toast exists
     await expect(
-  page.getByText(/appointment created successfully/i)
+  page.getByText(/appointment created successfully/i)    
 ).toBeVisible();
   });
 });
