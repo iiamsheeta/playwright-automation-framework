@@ -375,9 +375,22 @@ export class AppointmentPage {
   // =========================
 
   async clickAddIcon() {
-    await this.addIcon.click();
-    await expect(this.dialogTitle).toBeVisible();
-  }
+
+  // 🔥 FIX: wait for loader & overlay
+  await this.waitForNoOverlay();
+
+  // ✅ Ensure icon is visible
+  await expect(this.addIcon).toBeVisible();
+
+  // ✅ Scroll (extra safety)
+  await this.addIcon.scrollIntoViewIfNeeded();
+
+  // ✅ Click
+  await this.addIcon.click();
+
+  // ✅ Wait for dialog
+  await expect(this.dialogTitle).toBeVisible();
+}
 
   async selectPatientFromDropdown() {
     await this.patientInput.click();
@@ -563,60 +576,60 @@ export class AppointmentPage {
   // =========================
 
   async createAppointmentFlow(paymentType: PaymentType = "FULL") {
-    console.log(`🚀 Creating appointment with type: ${paymentType}`);
 
-    await this.clickAddIcon();
+  console.log(`🚀 Creating appointment with type: ${paymentType}`);
 
-    // NEW CASE checkbox
-    if (paymentType === "NEW_CASE") {
-      await this.selectNewCaseCheckbox();
-    }
+  // ❌ Removed patient selection
 
-    await this.selectPatientFromDropdown();
+  // Optional validation
+  await expect(this.patientInput).toHaveValue(/.+/);
 
-    // ❗ IMPORTANT CONDITION
-    if (paymentType !== "NEW_CASE") {
-      await this.openCaseIdDropdown();
-      await this.selectCaseId();
-    }
+  if (paymentType !== "NEW_CASE") {
+    await this.openCaseIdDropdown();
+    await this.selectCaseId();
+  }
 
-    await this.selectRandomDateTime();
+  await this.selectRandomDateTime();
 
-    await this.openDoctorDropdown();
-    await this.selectDoctor();
+  await this.openDoctorDropdown();
+  await this.selectDoctor();
 
-    await this.openColourDropdown();
-    await this.selectColour();
+  await this.openColourDropdown();
+  await this.selectColour();
 
-    await this.openChairDropdown();
-    await this.selectChair();
+  await this.openChairDropdown();
+  await this.selectChair();
 
-    // Payment switch (your current code ✅)
+  switch (paymentType) {
+    case "LATER":
+      await this.selectLaterCheckbox();
+      break;
 
-    // ✅ Payment handling (clean & scalable)
-    // After payment handling
+    case "NA":
+      await this.selectNACheckbox();
+      break;
 
-switch (paymentType) {
-  case "LATER":
-    await this.selectLaterCheckbox();
-    break;
+    case "FULL":
+    case "NEW_CASE":
+      await this.openModeOfPaymentDropdown();
+      await this.selectModeOfPayment();
+      await this.fillConsultationFees();
+      break;
+  }
 
-  case "NA":
-    await this.selectNACheckbox();
-    break;
+  await this.page.getByRole("button", { name: "Save" }).click();
 
-  case "FULL":
-  case "NEW_CASE":
-    await this.openModeOfPaymentDropdown();
-    await this.selectModeOfPayment();
-    await this.fillConsultationFees();
-    break;
-}
-
-// ✅ ADD THIS (YOU MISSED THIS)
-await this.page.getByRole("button", { name: "Save" }).click();
 
 // Optional: wait for dialog close
 await this.page.waitForTimeout(1000);
   }
+async waitForNoOverlay() {
+  // Wait for loader
+  await this.page.locator(".ngx-overlay").waitFor({ state: "hidden" }).catch(() => {});
+
+  // Wait for Angular backdrop (if exists)
+  await this.page.locator(".cdk-overlay-backdrop")
+    .waitFor({ state: "detached" })
+    .catch(() => {});
+}
 }

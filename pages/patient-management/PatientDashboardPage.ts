@@ -15,6 +15,7 @@ export class PatientDashboardPage {
   readonly ageInput: Locator;
   readonly cardNumberInput: Locator;
   readonly updateButton: Locator;
+  readonly createAppointmentButton: Locator;
 
   // ✅ Cached label mapping
   private labelMap: Map<string, Locator> = new Map();
@@ -41,6 +42,9 @@ export class PatientDashboardPage {
     this.cardNumberInput = page.locator('input[formcontrolname="cardNumber"]');
 
     this.updateButton = page.getByRole("button", { name: "Update" });
+    this.createAppointmentButton = page.getByRole("button", {
+  name: /create appointment/i,
+});
   }
 
   async verifyDashboardLoaded() {
@@ -121,4 +125,33 @@ export class PatientDashboardPage {
       await expect(await this.getValueByLabel("Card Number:"))
         .toContainText(expected.cardNumber);
   }
+  async clickCreateAppointment() {
+
+  // ✅ Step 1: Click Appointments tab
+  await this.page.getByText("Appointments").click();
+
+  // Better (if role works):
+  // await this.page.getByRole("tab", { name: "Appointments" }).click();
+
+  // ✅ Step 2: Wait for table / section
+  await expect(
+    this.page.getByText("Appointments (")
+  ).toBeVisible();
+
+  // ✅ Step 3: Click Add Icon (mat-icon)
+  const addButton = this.page.locator("mat-icon", {
+    hasText: "add_circle_outline",
+  });
+
+  await expect(addButton).toBeVisible();
+  await addButton.click();
+
+  // ✅ Step 4: Wait for dialog
+  await expect(
+    this.page.getByText("Appointment Registration")
+  ).toBeVisible();
+
+  // OR more stable:
+  // await expect(this.page.locator("mat-dialog-container")).toBeVisible();
+}
 }
