@@ -52,7 +52,7 @@ test('Create Patient Appointment Flow', async ({ page }) => {
     .toContainText('Appointment created successfully');
 
   // Diagnosis
-  await appointmentPage.openProvisionalDiagnosis();
+  await appointmentPage.openProvisionalDiagnosisFlow();
 
   await diagnosisPage.verifyPageLoaded();
 

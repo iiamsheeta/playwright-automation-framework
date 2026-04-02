@@ -88,7 +88,12 @@ export class ProvisionalDiagnosisPage {
 }
 
   async selectTooth(tooth: string) {
-  await this.page.getByRole('img', { name: tooth }).click();
+
+  const toothLocator = this.page.getByRole('img', { name: tooth });
+
+  await expect(toothLocator, `Tooth ${tooth} not found`).toBeVisible();
+
+  await toothLocator.click();
 }
 
   async addComment() {

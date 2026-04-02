@@ -202,6 +202,19 @@ export class AppointmentPage {
       .waitFor();
   }
 
+  async selectPatient() {
+  await this.patientInput.click();
+
+  const options = this.page.locator("mat-option");
+
+  await expect(options.first()).toBeVisible();
+
+  const count = await options.count();
+  const randomIndex = Math.floor(Math.random() * count);
+
+  await options.nth(randomIndex).click();
+}
+
   async fillAppointmentForm() {
     await this.page.locator(".ngx-overlay").waitFor({ state: "hidden" });
 

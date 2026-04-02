@@ -24,18 +24,29 @@ export class LoginPage {
 
 
   async login(tenant: string, username: string, password: string) {
-    if (!tenant || !username || !password) {
-      throw new Error("Login credentials are missing");
-    }
 
-    await expect(this.tenantInput).toBeVisible();
+  // ✅ Skip if already logged in
+  const isLoggedIn = await this.page
+    .getByText("Business Insights")
+    .isVisible()
+    .catch(() => false);
 
-    await this.tenantInput.fill(tenant);
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-
-    await this.loginButton.click();
+  if (isLoggedIn) {
+    console.log("✅ Already logged in → skipping login");
+    return;
   }
+
+  // ✅ Ensure login page
+  await this.page.goto("/login");
+
+  await expect(this.tenantInput).toBeVisible();
+
+  await this.tenantInput.fill(tenant);
+  await this.usernameInput.fill(username);
+  await this.passwordInput.fill(password);
+
+  await this.loginButton.click();
+}
 
   async verifyLoginSuccess() {
     await expect(this.page.getByText("Business Insights")).toBeVisible();

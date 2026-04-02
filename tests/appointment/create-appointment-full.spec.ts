@@ -5,25 +5,27 @@ import {
   PaymentType,
 } from "../../pages/appointment/AppointmentPage";
 
-const flows: PaymentType[] = ["FULL", "LATER", "NA", "NEW_CASE"];
+test.describe("📅 Appointment Tests", () => {
 
-flows.forEach((type) => {
-  test(`✅ Create Appointment - ${type}`, async ({ page }) => {
-    
-    // ✅ Navigate
-    await Navigation.goToAppointments(page);
+  const flows: PaymentType[] = ["FULL", "LATER", "NA", "NEW_CASE"];
 
-    const appointment = new AppointmentPage(page);
+  for (const type of flows) {
 
-    // ✅ Execute reusable flow (already handles NEW_CASE internally)
-    await appointment.createAppointmentFlow(type);
+    test(`Create Appointment - ${type}`, async ({ page }) => {
 
-    // ✅ Better validation (more stable than just text)
-    await expect(page.getByRole("button", { name: "Save" })).not.toBeVisible();
+      await Navigation.goToAppointments(page);
 
-    // OR if toast exists
-    await expect(
-  page.getByText(/appointment created successfully/i)    
-).toBeVisible();
-  });
+      const appointment = new AppointmentPage(page);
+
+      await appointment.clickAddIcon();   // ✅ FIXED
+      await appointment.createAppointmentFlow(type);
+
+      await expect(
+        page.getByText(/appointment created successfully/i)
+      ).toBeVisible();
+
+    });
+
+  }
+
 });

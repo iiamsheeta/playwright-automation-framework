@@ -10,7 +10,7 @@
         },
         {
           "name": "token",
-          "value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjU3ZDllMjliNmVmNTAzNDU3NWYzNiIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiS2luZyIsImdlbmRlciI6Ik1BTEUiLCJyb2xlIjoiYWRtaW4iLCJ1dWlkIjoiN2VlNjM5OTEtOWNjZC00MzIyLTgyZTgtNmNiNThkNjliNDA4IiwidGVuYW50SWQiOiJ0ZXN0aW5nIiwiaWF0IjoxNzc1MDQwNTE5LCJleHAiOjE3NzUxMjY5MTl9.SqX_2Uw61uC1Of7g0GsQ_SODNW8Y4xg9c9yE7vQSP04\""
+          "value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjU3ZDllMjliNmVmNTAzNDU3NWYzNiIsInVzZXJuYW1lIjoiYWRtaW4iLCJuYW1lIjoiS2luZyIsImdlbmRlciI6Ik1BTEUiLCJyb2xlIjoiYWRtaW4iLCJ1dWlkIjoiZjc1Y2QwOWUtYjQxMC00MGM3LWEwOTUtMzNjZGM0MTcyNmU3IiwidGVuYW50SWQiOiJ0ZXN0aW5nIiwiaWF0IjoxNzc1MTMxMTUxLCJleHAiOjE3NzUyMTc1NTF9.YcyjWPIbOFehJHWa6isLBidWPoH6Hr5QfakfR2S14aQ\""
         },
         {
           "name": "t-info",
@@ -18,7 +18,7 @@
         },
         {
           "name": "currentUser",
-          "value": "{\"id\":\"69257d9e29b6ef5034575f36\",\"username\":\"admin\",\"name\":\"King\",\"gender\":\"MALE\",\"role\":\"admin\",\"uuid\":\"7ee63991-9ccd-4322-82e8-6cb58d69b408\",\"tenantId\":\"testing\"}"
+          "value": "{\"id\":\"69257d9e29b6ef5034575f36\",\"username\":\"admin\",\"name\":\"King\",\"gender\":\"MALE\",\"role\":\"admin\",\"uuid\":\"f75cd09e-b410-40c7-a095-33cdc41726e7\",\"tenantId\":\"testing\"}"
         }
       ]
     }

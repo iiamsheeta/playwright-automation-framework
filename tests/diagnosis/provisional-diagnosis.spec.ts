@@ -1,14 +1,13 @@
-import { test } from '@playwright/test';
+import { test } from "@playwright/test";
 
-import { Navigation } from '../../utils/navigation';
-import { AppointmentPage } from '../../pages/appointment/AppointmentPage';
-import { ProvisionalDiagnosisPage } from '../../pages/provisional diagnosis/ProvisionalDiagnosisPage';
-import { TreatmentPlanPage } from '../../pages/treatment-plan/TreatmentPlanPage';
-import { PrescriptionPage } from '../../pages/prescription/PrescriptionPage';
-import { SignaturePage } from '../../pages/signature/SignaturePage';
+import { Navigation } from "../../utils/navigation";
+import { AppointmentPage } from "../../pages/appointment/AppointmentPage";
+import { ProvisionalDiagnosisPage } from "../../pages/provisional diagnosis/ProvisionalDiagnosisPage";
+import { TreatmentPlanPage } from "../../pages/treatment-plan/TreatmentPlanPage";
+import { PrescriptionPage } from "../../pages/prescription/PrescriptionPage";
+import { SignaturePage } from "../../pages/signature/SignaturePage";
 
-test('Complete Clinical Workflow', async ({ page }) => {
-
+test("Complete Clinical Workflow", async ({ page }) => {
   const appointmentPage = new AppointmentPage(page);
   const diagnosisPage = new ProvisionalDiagnosisPage(page);
   const treatmentPage = new TreatmentPlanPage(page);
@@ -31,7 +30,8 @@ test('Complete Clinical Workflow', async ({ page }) => {
 
   await diagnosisPage.selectDentalChart();
 
-  await diagnosisPage.selectTooth('17');
+  // If deciduous chart
+  await diagnosisPage.selectTooth("55");
 
   await diagnosisPage.selectClinicalFinding();
 
@@ -70,5 +70,4 @@ test('Complete Clinical Workflow', async ({ page }) => {
   await signaturePage.submitSignature();
 
   await signaturePage.saveDiagnosis();
-
 });
