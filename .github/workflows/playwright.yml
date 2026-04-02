@@ -19,11 +19,10 @@ jobs:
 
       - run: npx playwright install --with-deps
 
-      # 🔥 Start Angular app properly
       - name: Start App
         run: npm run start -- --host 0.0.0.0 &
       
-      # 🔥 Wait with timeout (VERY IMPORTANT)
+    
       - name: Wait for App
         run: npx wait-on http://localhost:4200 --timeout 60000
 
