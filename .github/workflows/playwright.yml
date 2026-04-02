@@ -19,4 +19,13 @@ jobs:
 
       - run: npx playwright install --with-deps
 
+      # 🔥 START YOUR ANGULAR APP
+      - name: Start App
+        run: npm run start &
+
+      # 🔥 WAIT FOR APP TO LOAD
+      - name: Wait for App
+        run: npx wait-on http://localhost:4200
+
+      # 🚀 RUN TESTS
       - run: npx playwright test
