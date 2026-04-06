@@ -26,11 +26,9 @@ test("Create Appointment - N/A Checkbox Flow", async ({ page }) => {
   await appointment.openChairDropdown();
   await appointment.selectChair();
 
-  // ✅ KEY STEP
+  //  KEY STEP
   await appointment.selectNACheckbox();
 
-  // ❌ SKIP Mode of Payment
-  // ❌ SKIP Consultation Fees
 
   await appointment.saveAppointment();
 });

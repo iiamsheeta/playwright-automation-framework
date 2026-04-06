@@ -1,73 +1,78 @@
 import { test } from "@playwright/test";
-
-import { Navigation } from "../../utils/navigation";
 import { AppointmentPage } from "../../pages/appointment/AppointmentPage";
 import { ProvisionalDiagnosisPage } from "../../pages/provisional diagnosis/ProvisionalDiagnosisPage";
 import { TreatmentPlanPage } from "../../pages/treatment-plan/TreatmentPlanPage";
 import { PrescriptionPage } from "../../pages/prescription/PrescriptionPage";
 import { SignaturePage } from "../../pages/signature/SignaturePage";
 
-test("Complete Clinical Workflow", async ({ page }) => {
-  const appointmentPage = new AppointmentPage(page);
-  const diagnosisPage = new ProvisionalDiagnosisPage(page);
-  const treatmentPage = new TreatmentPlanPage(page);
-  const prescriptionPage = new PrescriptionPage(page);
-  const signaturePage = new SignaturePage(page);
+test.describe("Full Diagnosis → Treatment → Prescription Flow", () => {
+  test("should complete full patient flow", async ({ page }) => {
+    const appointmentPage = new AppointmentPage(page);
+    const diagnosisPage = new ProvisionalDiagnosisPage(page);
+    const treatmentPage = new TreatmentPlanPage(page);
 
-  // Navigate to appointments
-  await Navigation.goToAppointments(page);
+    // ✅ Step 1: Go to Appointment page
+    await page.goto("/user/appointment");
 
-  // Open Provisional Diagnosis
-  await appointmentPage.openProvisionalDiagnosisFlow();
+    // ✅ Step 2: Open Provisional Diagnosis
+    await appointmentPage.openProvisionalDiagnosisFlow();
 
-  // =========================
-  // PROVISIONAL DIAGNOSIS
-  // =========================
+    // ✅ Step 3: Diagnosis Page Actions
+    await diagnosisPage.verifyPageLoaded();
+    await diagnosisPage.fillForm();
+    await diagnosisPage.selectToothAndFinding("55");
+    await diagnosisPage.addComment();
 
-  await diagnosisPage.verifyPageLoaded();
+    // ✅ Navigate to Treatment Planning
+    await diagnosisPage.goToNextStep();
 
-  await diagnosisPage.fillDiagnosisForm();
+    // ===============================
+    // 🔥 NEW CONTINUATION STARTS HERE
+    // ===============================
 
-  await diagnosisPage.selectDentalChart();
+    // ✅ Step 4: Treatment Planning Page
+    await treatmentPage.verifyPageLoaded();
 
-  // If deciduous chart
-  await diagnosisPage.selectTooth("55");
+    await treatmentPage.clickAddTreatmentStep();
 
-  await diagnosisPage.selectClinicalFinding();
+    await treatmentPage.selectProcedure(); // Scaling
 
-  await diagnosisPage.addComment();
+    await treatmentPage.enterPrice("800");
 
-  await diagnosisPage.goToNextStep();
+    await treatmentPage.selectDate(); // today/future
 
-  // =========================
-  // TREATMENT PLAN
-  // =========================
+    await treatmentPage.clickAddSpecialist();
 
-  await treatmentPage.verifyPageLoaded();
+    await treatmentPage.selectSpecialist("dhruv Kumar");
 
-  await treatmentPage.goToMedicineStep();
+    await treatmentPage.enterSpecialistAmount("20");
 
-  // =========================
-  // PRESCRIPTION
-  // =========================
+    // ✅ Move to Prescription page
+    await treatmentPage.goToNextStep();
 
-  await prescriptionPage.verifyPageLoaded();
+    const prescriptionPage = new PrescriptionPage(page);
 
-  await prescriptionPage.addMedicine();
+    await prescriptionPage.verifyPageLoaded();
 
-  await prescriptionPage.goToNextStep();
+    await prescriptionPage.addMedicine();
 
-  // =========================
-  // SIGNATURE
-  // =========================
+    await prescriptionPage.goToNextStep();
 
-  await signaturePage.verifyPageLoaded();
+    const signaturePage = new SignaturePage(page);
 
-  await signaturePage.openSignaturePad();
+    // ✅ Verify navigation
+    await signaturePage.verifyPageLoaded();
 
-  await signaturePage.drawSignature();
+    // ✅ Open signature modal
+    await signaturePage.openSignaturePad();
 
-  await signaturePage.submitSignature();
+    // ✅ Draw signature
+    await signaturePage.drawSignature();
 
-  await signaturePage.saveDiagnosis();
+    // ✅ Submit signature
+    await signaturePage.submitSignature();
+
+    // ✅ Save diagnosis
+    await signaturePage.saveDiagnosis();
+  });
 });

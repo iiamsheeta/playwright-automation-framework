@@ -17,7 +17,7 @@ export class PatientDashboardPage {
   readonly updateButton: Locator;
   readonly createAppointmentButton: Locator;
 
-  // ✅ Cached label mapping
+  //  Cached label mapping
   private labelMap: Map<string, Locator> = new Map();
 
   constructor(page: Page) {
@@ -50,11 +50,11 @@ export class PatientDashboardPage {
   async verifyDashboardLoaded() {
     await expect(this.pageTitle).toBeVisible();
 
-    // ✅ Ensure grid is loaded
+    //  Ensure grid is loaded
     await expect(this.labels.first()).toBeVisible();
   }
 
-  // 🔥 Build label map once
+  //  Build label map once
   private async buildLabelMap() {
     const count = await this.labels.count();
 
@@ -96,10 +96,10 @@ export class PatientDashboardPage {
 
     await this.updateButton.click();
 
-    // ✅ Wait for modal close
+    //  Wait for modal close
     await expect(this.ageInput).toBeHidden();
 
-    // ✅ Validate UI update
+    //  Validate UI update
     await expect(await this.getValueByLabel("Age:"))
       .toContainText(age);
   }
@@ -127,18 +127,18 @@ export class PatientDashboardPage {
   }
   async clickCreateAppointment() {
 
-  // ✅ Step 1: Click Appointments tab
+  // Step 1: Click Appointments tab
   await this.page.getByText("Appointments").click();
 
   // Better (if role works):
   // await this.page.getByRole("tab", { name: "Appointments" }).click();
 
-  // ✅ Step 2: Wait for table / section
+  //  Step 2: Wait for table / section
   await expect(
     this.page.getByText("Appointments (")
   ).toBeVisible();
 
-  // ✅ Step 3: Click Add Icon (mat-icon)
+  //  Step 3: Click Add Icon (mat-icon)
   const addButton = this.page.locator("mat-icon", {
     hasText: "add_circle_outline",
   });
@@ -146,12 +146,11 @@ export class PatientDashboardPage {
   await expect(addButton).toBeVisible();
   await addButton.click();
 
-  // ✅ Step 4: Wait for dialog
+  //  Step 4: Wait for dialog
   await expect(
     this.page.getByText("Appointment Registration")
   ).toBeVisible();
 
-  // OR more stable:
   // await expect(this.page.locator("mat-dialog-container")).toBeVisible();
 }
 }

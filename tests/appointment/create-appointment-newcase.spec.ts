@@ -10,10 +10,10 @@ test("Create Appointment - New Case Flow", async ({ page }) => {
 
   await appointment.clickAddIcon();
 
-  // ✅ Select New Case
+  // Select New Case
   await appointment.selectNewCaseCheckbox();
 
-  // 🔥 Continue full flow
+  //  Continue full flow
   await appointment.selectPatientFromDropdown();
 
   await appointment.selectRandomDateTime();
@@ -27,7 +27,7 @@ test("Create Appointment - New Case Flow", async ({ page }) => {
   await appointment.openChairDropdown();
   await appointment.selectChair();
 
-  // ✅ REQUIRED FOR NEW CASE FLOW
+  //  REQUIRED FOR NEW CASE FLOW
   await appointment.openModeOfPaymentDropdown();
   await appointment.selectModeOfPayment();
 

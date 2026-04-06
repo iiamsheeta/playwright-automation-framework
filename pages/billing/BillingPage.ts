@@ -30,9 +30,7 @@ export class BillingPage {
 
     this.page = page;
 
-    // =========================
     // Buttons
-    // =========================
 
     this.addBillBtn = page.locator('mat-icon:has-text("add_circle_outline")');
 
@@ -43,9 +41,7 @@ export class BillingPage {
 
     this.submitBtn = page.getByRole('button', { name: /Submit/i });
 
-    // =========================
     // Bill Details
-    // =========================
 
     this.patientCaseField = page.locator('input[formcontrolname="patientName"]');
 
@@ -55,9 +51,8 @@ export class BillingPage {
 
     this.amountField = page.getByPlaceholder('Enter Amount');
 
-    // =========================
+   
     // Payment Step
-    // =========================
 
     this.discountField = page.locator('input[formcontrolname="discount"]');
 
@@ -74,9 +69,8 @@ export class BillingPage {
       'mat-select[formcontrolname="modeOfPayment"]'
     );
 
-    // =========================
+
     // Billing Table
-    // =========================
 
     this.firstBillRow = page.locator('table tbody tr').first();
 
@@ -87,9 +81,8 @@ export class BillingPage {
       page.getByRole('menuitem').filter({ hasText: 'Download' });
   }
 
-  // =========================
+  
   // Navigation
-  // =========================
 
  async navigateToBilling() {
 
@@ -107,9 +100,8 @@ export class BillingPage {
 
 }
 
-  // =========================
+ 
   // Create Billing
-  // =========================
 
   async createBilling() {
 
@@ -138,9 +130,8 @@ export class BillingPage {
     await this.nextBtn.click();
   }
 
-  // =========================
+  
   // Payment Steps
-  // =========================
 
   async goToPaymentStep() {
 
@@ -174,9 +165,7 @@ export class BillingPage {
     await this.page.waitForLoadState('networkidle');
   }
 
-  // =========================
   // Download Invoice
-  // =========================
 
   async downloadBillingInvoice() {
 

@@ -82,9 +82,7 @@ export class AppointmentPage {
   constructor(page: Page) {
     this.page = page;
 
-    // =========================
-    // EXISTING CODE (UNCHANGED)
-    // =========================
+    // LOCATORS
 
     this.firstRow = page.locator("table tbody tr").first();
 
@@ -148,10 +146,6 @@ export class AppointmentPage {
       .locator('[role="menuitem"]')
       .filter({ hasText: "Provisional Diagnosis" });
 
-    // =========================
-    // 🔥 NEW FLOW LOCATORS (ADDED)
-    // =========================
-
     this.allAppointmentsLink = page.getByRole("link", {
       name: "All Appointments",
     });
@@ -165,7 +159,6 @@ export class AppointmentPage {
     this.patientInput = page.getByLabel("Patient Name");
     this.caseIdInput = page.getByLabel("Select CaseId For Appointment");
 
-    // Angular overlay dropdown
     this.dropdownOptions = page.locator(
       "mat-option .mdc-list-item__primary-text",
     );
@@ -181,10 +174,6 @@ export class AppointmentPage {
       name: "New Case",
     });
   }
-
-  // =========================
-  // EXISTING METHODS (UNCHANGED)
-  // =========================
 
   async openCreateAppointment() {
     await this.firstRow.waitFor();
@@ -203,17 +192,17 @@ export class AppointmentPage {
   }
 
   async selectPatient() {
-  await this.patientInput.click();
+    await this.patientInput.click();
 
-  const options = this.page.locator("mat-option");
+    const options = this.page.locator("mat-option");
 
-  await expect(options.first()).toBeVisible();
+    await expect(options.first()).toBeVisible();
 
-  const count = await options.count();
-  const randomIndex = Math.floor(Math.random() * count);
+    const count = await options.count();
+    const randomIndex = Math.floor(Math.random() * count);
 
-  await options.nth(randomIndex).click();
-}
+    await options.nth(randomIndex).click();
+  }
 
   async fillAppointmentForm() {
     await this.page.locator(".ngx-overlay").waitFor({ state: "hidden" });
@@ -360,50 +349,76 @@ export class AppointmentPage {
       this.page.locator("table tbody").getByText(caseId),
     ).not.toBeVisible();
   }
+  async selectMenuOption(buttonName: string, optionName: string) {
+    const button = this.page.getByRole("button", { name: buttonName });
 
-  async openProvisionalDiagnosisFlow() {
-    await this.page.locator("table tbody tr").first().waitFor();
+    await button.click();
 
-    await this.todayFilter.click();
-    await this.page.locator('[role="menu"]').waitFor();
-    await this.allFilterOption.click();
+    const menu = this.page.getByRole("menu");
+    await expect(menu).toBeVisible();
 
-    await this.page.getByRole("button", { name: "By Status" }).click();
-    await this.page.getByRole("menuitem", { name: "Confirm" }).first().click();
+    const option = menu.getByRole("menuitem", {
+      name: optionName,
+      exact: true,
+    });
 
-    const row = this.page.locator("table tbody tr").first();
+    await expect(option).toBeVisible();
+    await option.click();
 
-    await row.locator("button").last().click();
-
-    await this.provisionalDiagnosisOption.click();
-
+    // wait for overlay to close
     await this.page
-      .getByRole("heading", {
-        name: "Provisional Diagnosis",
-      })
-      .waitFor();
+      .locator(".cdk-overlay-backdrop")
+      .waitFor({ state: "hidden" })
+      .catch(() => {});
   }
-  // =========================
-  // 🔥 MISSING METHODS (ADD THIS)
-  // =========================
+  async openProvisionalDiagnosisFlow() {
+
+  await this.page.locator("table tbody tr").first().waitFor({
+    state: "visible"
+  });
+
+  // ✅ Today → All
+  await this.selectMenuOption("Today", "All");
+
+  // ✅ By Status → Confirm
+  await this.selectMenuOption("By Status", "Confirm");
+
+  // ✅ Open 3-dot menu
+  const row = this.page.locator("table tbody tr").first();
+  const actionBtn = row.locator('button[aria-haspopup="menu"]').first();
+
+  await expect(actionBtn).toBeVisible();
+  await actionBtn.click();
+
+  // ✅ Wait for overlay menu
+  const menu = this.page.getByRole("menu");
+  await expect(menu).toBeVisible();
+
+  // ✅ Click "New provisional"
+  const menuItem = menu.getByRole("menuitem", {
+    name: /new provis/i,
+  });
+
+  await expect(menuItem).toBeVisible();
+  await menuItem.click();
+}
 
   async clickAddIcon() {
+    // 🔥 FIX: wait for loader & overlay
+    await this.waitForNoOverlay();
 
-  // 🔥 FIX: wait for loader & overlay
-  await this.waitForNoOverlay();
+    // ✅ Ensure icon is visible
+    await expect(this.addIcon).toBeVisible();
 
-  // ✅ Ensure icon is visible
-  await expect(this.addIcon).toBeVisible();
+    // ✅ Scroll (extra safety)
+    await this.addIcon.scrollIntoViewIfNeeded();
 
-  // ✅ Scroll (extra safety)
-  await this.addIcon.scrollIntoViewIfNeeded();
+    // ✅ Click
+    await this.addIcon.click();
 
-  // ✅ Click
-  await this.addIcon.click();
-
-  // ✅ Wait for dialog
-  await expect(this.dialogTitle).toBeVisible();
-}
+    // ✅ Wait for dialog
+    await expect(this.dialogTitle).toBeVisible();
+  }
 
   async selectPatientFromDropdown() {
     await this.patientInput.click();
@@ -420,9 +435,9 @@ export class AppointmentPage {
 
     await expect(this.dropdownOptions.first()).toBeVisible();
   }
-  // =========================
-  // 🔥 NEW FLOW METHODS (MISSING)
-  // =========================
+
+  // NEW FLOW METHODS
+
   async selectRandomDropdownOption() {
     const count = await this.dropdownOptions.count();
 
@@ -440,7 +455,7 @@ export class AppointmentPage {
 
     console.log(`✅ Selected option: ${value}`);
 
-    return value; // useful for validation later
+    return value;
   }
 
   async selectRandomDateTime() {
@@ -459,10 +474,8 @@ export class AppointmentPage {
       hour12: true,
     });
 
-    // ✅ WAIT for input properly
     await expect(this.dateTimeInput).toBeVisible();
 
-    // ✅ Clear before fill (Angular sometimes keeps stale value)
     await this.dateTimeInput.fill("");
     await this.dateTimeInput.fill(formatted);
 
@@ -559,9 +572,7 @@ export class AppointmentPage {
     await this.consultationFees.fill(randomFees.toString());
   }
 
-  // =========================
-  // 🔥 NEW CHECKBOX METHODS
-  // =========================
+  //  NEW CHECKBOX
 
   async selectLaterCheckbox() {
     if (!(await this.laterCheckbox.isChecked())) {
@@ -575,74 +586,68 @@ export class AppointmentPage {
     }
   }
 
-  // =========================
-  // 🔥 NEW CASE CHECKBOX
-  // =========================
-
   async selectNewCaseCheckbox() {
     await expect(this.newCaseCheckbox).toBeVisible();
     await this.newCaseCheckbox.check();
   }
 
-  // =========================
-  // 🔥 REUSABLE CREATE APPOINTMENT FLOW
-  // =========================
-
   async createAppointmentFlow(paymentType: PaymentType = "FULL") {
+    console.log(`🚀 Creating appointment with type: ${paymentType}`);
 
-  console.log(`🚀 Creating appointment with type: ${paymentType}`);
+    // Optional validation
+    await expect(this.patientInput).toHaveValue(/.+/);
 
-  // ❌ Removed patient selection
+    if (paymentType !== "NEW_CASE") {
+      await this.openCaseIdDropdown();
+      await this.selectCaseId();
+    }
 
-  // Optional validation
-  await expect(this.patientInput).toHaveValue(/.+/);
+    await this.selectRandomDateTime();
 
-  if (paymentType !== "NEW_CASE") {
-    await this.openCaseIdDropdown();
-    await this.selectCaseId();
+    await this.openDoctorDropdown();
+    await this.selectDoctor();
+
+    await this.openColourDropdown();
+    await this.selectColour();
+
+    await this.openChairDropdown();
+    await this.selectChair();
+
+    switch (paymentType) {
+      case "LATER":
+        await this.selectLaterCheckbox();
+        break;
+
+      case "NA":
+        await this.selectNACheckbox();
+        break;
+
+      case "FULL":
+      case "NEW_CASE":
+        await this.openModeOfPaymentDropdown();
+        await this.selectModeOfPayment();
+        await this.fillConsultationFees();
+        break;
+    }
+
+    await this.page.getByRole("button", { name: "Save" }).click();
+
+    // Optional: wait for dialog close
+    await this.page.waitForTimeout(1000);
   }
+  async waitForNoOverlay() {
+    // loader
+    await this.page
+      .locator(".ngx-overlay")
+      .waitFor({ state: "hidden" })
+      .catch(() => {});
 
-  await this.selectRandomDateTime();
+    // angular backdrop
+    const overlay = this.page.locator(".cdk-overlay-backdrop");
 
-  await this.openDoctorDropdown();
-  await this.selectDoctor();
-
-  await this.openColourDropdown();
-  await this.selectColour();
-
-  await this.openChairDropdown();
-  await this.selectChair();
-
-  switch (paymentType) {
-    case "LATER":
-      await this.selectLaterCheckbox();
-      break;
-
-    case "NA":
-      await this.selectNACheckbox();
-      break;
-
-    case "FULL":
-    case "NEW_CASE":
-      await this.openModeOfPaymentDropdown();
-      await this.selectModeOfPayment();
-      await this.fillConsultationFees();
-      break;
+    if (await overlay.isVisible().catch(() => false)) {
+      await this.page.keyboard.press("Escape");
+      await overlay.waitFor({ state: "hidden" }).catch(() => {});
+    }
   }
-
-  await this.page.getByRole("button", { name: "Save" }).click();
-
-
-// Optional: wait for dialog close
-await this.page.waitForTimeout(1000);
-  }
-async waitForNoOverlay() {
-  // Wait for loader
-  await this.page.locator(".ngx-overlay").waitFor({ state: "hidden" }).catch(() => {});
-
-  // Wait for Angular backdrop (if exists)
-  await this.page.locator(".cdk-overlay-backdrop")
-    .waitFor({ state: "detached" })
-    .catch(() => {});
-}
 }

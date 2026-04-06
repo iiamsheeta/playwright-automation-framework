@@ -23,7 +23,7 @@ test("Create Appointment - Sidebar Flow", async ({ page }) => {
   await appointment.openColourDropdown();
   await appointment.selectColour();
 
-  // 🔥 NEW PART
+  //  NEW PART
   await appointment.openChairDropdown();
   await appointment.selectChair();
 

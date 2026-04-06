@@ -12,25 +12,25 @@ test('Edit Appointment Flow', async ({ page }) => {
 
   const patient = DataFactory.buildPatient();
 
-  // 1️⃣ Go to Patient Module
+  //  Go to Patient Module
   await Navigation.goToPatients(page);
 
-  // 2️⃣ Create Patient
+  //  Create Patient
   await patientPage.createPatient(patient);
 
   await patientPage.verifyPatientCreated(patient.email);
 
-  // 3️⃣ Create Appointment
+  //  Create Appointment
   await appointmentPage.openCreateAppointment();
 
   await appointmentPage.fillAppointmentForm();
 
   await appointmentPage.saveAppointment();
 
-  // 4️⃣ Navigate to Appointment List
+  //  Navigate to Appointment List
   await Navigation.goToAppointments(page);
 
-  // 5️⃣ Edit Appointment
+  //  Edit Appointment
   await appointmentPage.openEditAppointment();
 
   await appointmentPage.changeAppointmentDateToNextDay();

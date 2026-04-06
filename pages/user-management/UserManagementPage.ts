@@ -84,9 +84,7 @@ export class UserManagementPage {
     this.doctorStatusOption = page.getByRole("menuitem", { name: "Doctor" });
   }
 
-  // ======================
   // Navigation
-  // ======================
 
   async openUserManagement() {
     await this.page.goto("/user/manage/list");
@@ -106,9 +104,7 @@ export class UserManagementPage {
     await expect(this.page.getByText("Add User")).toBeVisible();
   }
 
-  // ======================
   // Create User Methods
-  // ======================
 
   async selectSalutation(value: string) {
     await this.salutationDropdown.click();
@@ -176,9 +172,7 @@ export class UserManagementPage {
     await this.page.waitForSelector("table tbody tr");
   }
 
-  // ======================
   // Action Menu
-  // ======================
 
   async openUserActionMenu() {
     const actionBtn = this.page
@@ -199,9 +193,9 @@ export class UserManagementPage {
 
     await editBtn.click();
   }
-  // ======================
+
   // Edit User
-  // ======================
+
   async filterDoctorStatus() {
     await this.byStatusBtn.click();
 
@@ -231,21 +225,23 @@ export class UserManagementPage {
     await expect(phoneCell).toContainText(phone);
   }
 
-  // =============================
   // Delete User
-  // =============================
 
-  async deleteFirstUser() {
-    // click 3 dot action menu
-    const actionBtn = this.page.locator("button.mat-mdc-menu-trigger").first();
-    await actionBtn.click();
+async deleteFirstUser() {
 
-    // click Delete User
-    await this.page.getByRole("menuitem", { name: "Delete User" }).click();
+  await this.openUserActionMenu();
 
-    // confirm delete in dialog
-    await this.page.getByRole("button", { name: "Delete" }).click();
-  }
+  const deleteMenuItem = this.page.getByRole("menuitem", { name: "Delete User" });
+
+  await expect(deleteMenuItem).toBeVisible();
+
+  await deleteMenuItem.click();
+
+  const dialog = this.page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+
+  await dialog.getByRole("button", { name: "Delete" }).click();
+}
 
   async verifyUserDeleted(username: string) {
     await this.page.waitForTimeout(1000);

@@ -4,111 +4,146 @@ export class ProvisionalDiagnosisPage {
 
   readonly page: Page;
 
+  // =========================
+  // Form Fields
+  // =========================
+
   readonly chiefComplaint: Locator;
   readonly extraOralFinding: Locator;
   readonly pastMedicalHistory: Locator;
-
-  readonly dentalChartDropdown: Locator;
-  readonly clinicalFindingsDropdown: Locator;
-
   readonly additionalComment: Locator;
-  readonly tooth55: Locator;
+
+  // =========================
+  // Tooth Selection
+  // =========================
+
+  readonly tooth: (toothNumber: string) => Locator;
+
+  // =========================
+  // Dialog (Clinical Findings)
+  // =========================
+
+  readonly dialog: Locator;
+  readonly findingCheckbox: (finding: string) => Locator;
+  readonly dialogSubmitBtn: Locator;
+
+  // =========================
+  // Navigation
+  // =========================
 
   readonly nextStepButton: Locator;
 
   constructor(page: Page) {
-
     this.page = page;
 
-    this.chiefComplaint = page.getByRole('textbox', { name: 'Chief Complaint' });
+    // Form fields
+    this.chiefComplaint = page.getByRole('textbox', { name: /Chief Complaint/i });
+    this.extraOralFinding = page.getByRole('textbox', { name: /Extra Oral Findings/i });
+    this.pastMedicalHistory = page.getByRole('textbox', { name: /Past History/i });
+    this.additionalComment = page.getByRole('textbox', { name: /Additional Comment/i });
 
-    this.extraOralFinding = page.getByRole('textbox', { name: 'Extraoral Finding' });
+    // Tooth selector (dynamic)
+    this.tooth = (toothNumber: string) =>
+      page.locator(`text="${toothNumber}"`).locator('..');
 
-    this.pastMedicalHistory = page.getByRole('textbox', { name: 'Past Medical History' });
+    // Dialog
+    this.dialog = page.getByRole('dialog');
 
-    this.dentalChartDropdown = page.getByRole('combobox', {
-      name: /Select Dental Chart/i
-    });
+    this.findingCheckbox = (finding: string) =>
+      page.getByRole('checkbox', { name: new RegExp(finding, 'i') });
 
-    this.clinicalFindingsDropdown = page.locator(
-  'mat-select[formcontrolname="selectedProblem"]'
-);
+    this.dialogSubmitBtn = page.getByRole('button', { name: /^Submit$/ });
 
-    this.additionalComment = page.getByRole('textbox', {
-      name: 'Additional comment'
-    });
-
-    this.tooth55 = page.getByRole('img', { name: '55' });
-
+    // Navigation
     this.nextStepButton = page.getByRole('button', { name: 'Next Step' });
-
   }
+
+  // =========================
+  // 🔥 COMMON HELPERS
+  // =========================
+
+  async waitForNoOverlay() {
+    const overlay = this.page.locator('.cdk-overlay-backdrop');
+
+    if (await overlay.isVisible().catch(() => false)) {
+      await this.page.keyboard.press('Escape');
+      await overlay.waitFor({ state: 'hidden' }).catch(() => {});
+    }
+  }
+
+  async safeClick(locator: Locator) {
+    await this.waitForNoOverlay();
+    await expect(locator).toBeVisible();
+    await locator.click();
+  }
+
+  // =========================
+  // 🔥 PAGE VALIDATION
+  // =========================
 
   async verifyPageLoaded() {
-
     await expect(
-      this.page.getByRole('heading', { name: 'Provisional Diagnosis' })
+      this.page.getByRole('heading', { name: /Provisional Diagnosis/i })
     ).toBeVisible();
-
   }
 
-  async fillDiagnosisForm() {
+  // =========================
+  // 🔥 FORM ACTIONS
+  // =========================
 
+  async fillForm() {
     await this.chiefComplaint.fill('Patient has tooth pain');
-
     await this.extraOralFinding.fill('Swelling near gum');
-
-    await this.pastMedicalHistory.fill('No major medical history');
-
+    await this.pastMedicalHistory.fill('No major history');
   }
 
-  async selectDentalChart() {
+  // =========================
+  // 🔥 TOOTH + FINDINGS FLOW
+  // =========================
 
-    await this.dentalChartDropdown.click();
+  async selectToothAndFinding(
+  toothNumber: string,
+  finding: string = 'Bleeding From Gums'
+) {
+  const tooth = this.tooth(toothNumber);
 
-    await this.page.getByRole('option').first().click();
+  await expect(tooth, `Tooth ${toothNumber} not found`).toBeVisible();
 
-  }
+  await this.safeClick(tooth);
 
-  async selectClinicalFinding() {
+  // Wait dialog open
+  await this.dialog.waitFor({ state: 'visible' });
 
-  await expect(this.clinicalFindingsDropdown).toBeEnabled();
+  const checkbox = this.findingCheckbox(finding);
 
-  await this.clinicalFindingsDropdown.click();
+  await checkbox.check();
 
-  const option = this.page.locator('.cdk-overlay-pane mat-option').first();
+  await this.safeClick(this.dialogSubmitBtn);
 
-  await option.click();
-
-  // close dropdown safely
-  await this.page.keyboard.press('Escape');
-
-  await expect(this.page.locator('.cdk-overlay-backdrop:visible')).toHaveCount(0);
-
+  // ✅ FAST WAIT (NO DELAY)
+  await this.dialog.waitFor({ state: 'hidden' });
 }
-
-  async selectTooth(tooth: string) {
-
-  const toothLocator = this.page.getByRole('img', { name: tooth });
-
-  await expect(toothLocator, `Tooth ${tooth} not found`).toBeVisible();
-
-  await toothLocator.click();
-}
+  // =========================
+  // 🔥 COMMENT
+  // =========================
 
   async addComment() {
-
     await this.additionalComment.fill('Initial diagnosis recorded');
-
   }
 
-  async goToNextStep() {
+  // =========================
+  // 🔥 NAVIGATION
+  // =========================
 
-  // wait until no overlay is visible
-  await this.page.locator('.cdk-overlay-backdrop:visible').waitFor({ state: 'hidden' });
+  async goToNextStep() {
+  await this.nextStepButton.scrollIntoViewIfNeeded();
+
+  await this.waitForNoOverlay();
+
+  await expect(this.nextStepButton).toBeVisible();
 
   await this.nextStepButton.click();
-
 }
+
 
 }

@@ -25,18 +25,18 @@ export class LoginPage {
 
   async login(tenant: string, username: string, password: string) {
 
-  // ✅ Skip if already logged in
+  // if already logged in
   const isLoggedIn = await this.page
     .getByText("Business Insights")
     .isVisible()
     .catch(() => false);
 
   if (isLoggedIn) {
-    console.log("✅ Already logged in → skipping login");
+    console.log("Already logged in → skipping login");
     return;
   }
 
-  // ✅ Ensure login page
+  // Ensure login page
   await this.page.goto("/login");
 
   await expect(this.tenantInput).toBeVisible();
