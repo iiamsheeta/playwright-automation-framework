@@ -12,13 +12,13 @@ test("should skip treatment planning and complete flow", async ({ page }) => {
   const prescriptionPage = new PrescriptionPage(page);
   const signaturePage = new SignaturePage(page);
 
-  // ✅ Go to Appointment
+  //  Go to Appointment
   await page.goto("/user/appointment");
 
-  // ✅ Open Diagnosis
+  //  Open Diagnosis
   await appointmentPage.openProvisionalDiagnosisFlow();
 
-  // ✅ Diagnosis
+  //  Diagnosis
   await diagnosisPage.verifyPageLoaded();
   await diagnosisPage.fillForm();
   await diagnosisPage.selectToothAndFinding("55");
@@ -27,7 +27,7 @@ test("should skip treatment planning and complete flow", async ({ page }) => {
   await diagnosisPage.goToNextStep();
   await treatmentPage.verifyPageLoaded();
 
-  // ✅ Just click next (no validation, no input)
+  //  Just click next (no validation, no input)
   await treatmentPage.goToNextStep();
 
   // Continue flow

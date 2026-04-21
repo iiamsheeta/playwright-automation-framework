@@ -11,45 +11,33 @@ test.describe("Full Diagnosis → Treatment → Prescription Flow", () => {
     const diagnosisPage = new ProvisionalDiagnosisPage(page);
     const treatmentPage = new TreatmentPlanPage(page);
 
-    // ✅ Step 1: Go to Appointment page
+    // Step 1: Go to Appointment page
     await page.goto("/user/appointment");
 
-    // ✅ Step 2: Open Provisional Diagnosis
+    // Step 2: Open Provisional Diagnosis
     await appointmentPage.openProvisionalDiagnosisFlow();
 
-    // ✅ Step 3: Diagnosis Page Actions
+    // Step 3: Diagnosis Page Actions
     await diagnosisPage.verifyPageLoaded();
     await diagnosisPage.fillForm();
     await diagnosisPage.selectToothAndFinding("55");
     await diagnosisPage.addComment();
 
-    // ✅ Navigate to Treatment Planning
+    // Navigate to Treatment Planning
     await diagnosisPage.goToNextStep();
 
-    // ===============================
-    // 🔥 NEW CONTINUATION STARTS HERE
-    // ===============================
-
-    // ✅ Step 4: Treatment Planning Page
+    // Step 4: Treatment Planning Page
     await treatmentPage.verifyPageLoaded();
 
     await treatmentPage.clickAddTreatmentStep();
 
-    await treatmentPage.selectProcedure(); // Scaling
+    await treatmentPage.selectTooth("55");
 
-    await treatmentPage.enterPrice("800");
+    await treatmentPage.selectProcedure("Entra");
 
-    await treatmentPage.selectDate(); // today/future
+    await treatmentPage.enterPrice("1000");
 
-    await treatmentPage.clickAddSpecialist();
-
-    await treatmentPage.selectSpecialist("dhruv Kumar");
-
-    await treatmentPage.enterSpecialistAmount("20");
-
-    // ✅ Move to Prescription page
     await treatmentPage.goToNextStep();
-
     const prescriptionPage = new PrescriptionPage(page);
 
     await prescriptionPage.verifyPageLoaded();
@@ -60,19 +48,19 @@ test.describe("Full Diagnosis → Treatment → Prescription Flow", () => {
 
     const signaturePage = new SignaturePage(page);
 
-    // ✅ Verify navigation
+    // Verify navigation
     await signaturePage.verifyPageLoaded();
 
-    // ✅ Open signature modal
+    // Open signature modal
     await signaturePage.openSignaturePad();
 
-    // ✅ Draw signature
+    // Draw signature
     await signaturePage.drawSignature();
 
-    // ✅ Submit signature
+    //  Submit signature
     await signaturePage.submitSignature();
 
-    // ✅ Save diagnosis
+    //  Save diagnosis
     await signaturePage.saveDiagnosis();
   });
 });

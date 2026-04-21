@@ -88,7 +88,7 @@ export class PrescriptionPage {
   async addMedicine() {
   await this.medicineBtn.click();
 
-  // ✅ Wait for comboboxes globally (not from row)
+  // Wait for comboboxes globally (not from row)
   const fields = this.page.getByRole('combobox');
 
   await expect(fields.first()).toBeVisible();

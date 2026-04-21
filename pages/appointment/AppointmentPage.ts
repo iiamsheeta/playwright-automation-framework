@@ -372,36 +372,35 @@ export class AppointmentPage {
       .catch(() => {});
   }
   async openProvisionalDiagnosisFlow() {
+    await this.page.locator("table tbody tr").first().waitFor({
+      state: "visible",
+    });
 
-  await this.page.locator("table tbody tr").first().waitFor({
-    state: "visible"
-  });
+    // ✅ Today → All
+    await this.selectMenuOption("Today", "All");
 
-  // ✅ Today → All
-  await this.selectMenuOption("Today", "All");
+    // ✅ By Status → Confirm
+    await this.selectMenuOption("By Status", "Confirm");
 
-  // ✅ By Status → Confirm
-  await this.selectMenuOption("By Status", "Confirm");
+    // ✅ Open 3-dot menu
+    const row = this.page.locator("table tbody tr").first();
+    const actionBtn = row.locator('button[aria-haspopup="menu"]').first();
 
-  // ✅ Open 3-dot menu
-  const row = this.page.locator("table tbody tr").first();
-  const actionBtn = row.locator('button[aria-haspopup="menu"]').first();
+    await expect(actionBtn).toBeVisible();
+    await actionBtn.click();
 
-  await expect(actionBtn).toBeVisible();
-  await actionBtn.click();
+    // ✅ Wait for overlay menu
+    const menu = this.page.getByRole("menu");
+    await expect(menu).toBeVisible();
 
-  // ✅ Wait for overlay menu
-  const menu = this.page.getByRole("menu");
-  await expect(menu).toBeVisible();
+    // ✅ Click "New provisional"
+    const menuItem = this.page
+      .locator(".cdk-overlay-pane")
+      .getByRole("menuitem", { name: /provisional diagnosis/i });
 
-  // ✅ Click "New provisional"
-  const menuItem = menu.getByRole("menuitem", {
-    name: /new provis/i,
-  });
-
-  await expect(menuItem).toBeVisible();
-  await menuItem.click();
-}
+    await expect(menuItem).toBeVisible();
+    await menuItem.click();
+  }
 
   async clickAddIcon() {
     // 🔥 FIX: wait for loader & overlay

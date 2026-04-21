@@ -5,117 +5,139 @@ export class TreatmentPlanPage {
 
   readonly heading: Locator;
   readonly addTreatmentStepBtn: Locator;
-  readonly procedureDropdown: Locator;
-  readonly priceInput: Locator;
-  readonly dateInput: Locator;
-  readonly addSpecialistBtn: Locator;
-  readonly specialistDropdown: Locator;
-  readonly specialistAmountInput: Locator;
   readonly nextStepButton: Locator;
-  readonly calendarButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
-    this.heading = page.getByRole("heading", { name: /Treatment Steps/i });
+    this.heading = page
+      .getByRole("tabpanel", { name: /treatment planning/i })
+      .getByRole("heading", { name: /treatment steps/i })
+      .first();
 
-    this.addTreatmentStepBtn = page.getByRole("button", {
-      name: /add treatment step/i,
-    });
+    this.addTreatmentStepBtn = page
+      .getByRole("tabpanel", { name: /treatment planning/i })
+      .locator("button")
+      .filter({ hasText: "Treatment Step" });
 
-    this.procedureDropdown = page.locator("table tbody tr select").first();
-    this.priceInput = page.locator('input[type="number"]').first();
-
-    this.dateInput = page.locator('input[placeholder="Date"]');
-    this.calendarButton = page.getByRole("button", { name: /open calendar/i });
-
-    this.addSpecialistBtn = page.getByRole("button", {
-      name: /add specialist/i,
-    });
-
-    this.specialistDropdown = page.locator("select").nth(1);
-
-    this.specialistAmountInput = page.locator('input[type="number"]').nth(1);
     this.nextStepButton = page
-  .getByRole('tabpanel', { name: /treatment planning/i })
-  .getByRole('button', { name: /next step/i });
+      .getByRole("tabpanel", { name: /treatment planning/i })
+      .getByRole("button", { name: /next step/i });
   }
 
-  // ✅ Verify page
+  // =========================
+  // PAGE VALIDATION
+  // =========================
+
   async verifyPageLoaded() {
     await expect(this.heading).toBeVisible();
   }
 
-  // ✅ Add Treatment Step
+  // =========================
+  // ADD STEP
+  // =========================
+
   async clickAddTreatmentStep() {
+    await expect(this.addTreatmentStepBtn).toBeVisible();
+    await expect(this.addTreatmentStepBtn).toBeEnabled();
     await this.addTreatmentStepBtn.click();
   }
 
-  // ✅ Select Procedure (Scaling)
-  async selectProcedure() {
-    await this.procedureDropdown.selectOption({ label: "Scaling" });
+  async getFirstRow() {
+    const table = this.page
+      .getByRole("tabpanel", { name: /treatment planning/i })
+      .locator("table")
+      .first();
+
+    const row = table.locator("tbody tr").first();
+
+    await expect(row).toBeVisible();
+    return row;
   }
 
-  // ✅ Enter Price
-  async enterPrice(value: string = "800") {
-    await this.priceInput.fill(value);
+  // =========================
+  // TOOTH SELECTION (Autocomplete)
+  // =========================
+
+  async selectTooth(tooth: string = "55") {
+    const row = await this.getFirstRow();
+
+    const toothInput = row.getByRole("combobox", {
+      name: /teeth/i,
+    });
+
+    await expect(toothInput).toBeVisible();
+    await toothInput.click();
+
+    const option = this.page
+      .locator(".cdk-overlay-pane")
+      .getByRole("option", { name: new RegExp(`^${tooth}$`) });
+
+    await expect(option).toBeVisible();
+    await option.click();
   }
 
-  // ✅ Select Date (Today or Future)
-  async selectDate() {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.toLocaleString("default", { month: "long" });
-    const year = today.getFullYear();
+  // =========================
+  // PROCEDURE SELECTION (Autocomplete)
+  // =========================
 
-    const fullDate = `${month} ${day}, ${year}`;
+  async selectProcedure(value: string = "Entra") {
+    const row = await this.getFirstRow();
 
-    await this.calendarButton.click();
+    const procedureInput = row.getByRole("combobox", {
+      name: /search procedure/i,
+    });
 
-    const calendar = this.page.locator(".mat-datepicker-content-container");
-    await calendar.waitFor({ state: "visible" });
+    await expect(procedureInput).toBeVisible();
 
-    await calendar.getByRole("button", { name: fullDate }).click();
+    await procedureInput.click();
+    await procedureInput.fill(value); // 🔥 IMPORTANT
+
+    const option = this.page
+      .locator(".cdk-overlay-pane")
+      .getByRole("option", { name: new RegExp(value, "i") });
+
+    await expect(option).toBeVisible();
+    await option.click();
   }
 
-  // ✅ Add Specialist
-  async clickAddSpecialist() {
-    await this.addSpecialistBtn.click();
+  // =========================
+  // PRICE INPUT
+  // =========================
+
+  async enterPrice(value: string = "1000") {
+    const row = await this.getFirstRow();
+
+    const priceInput = row.locator('input[type="number"]').first();
+
+    await expect(priceInput).toBeVisible();
+    await priceInput.fill(value);
   }
 
-  // ✅ Select Specialist
-  async selectSpecialist(name: string = "dhruv Kumar") {
-    await this.specialistDropdown.selectOption({ label: name });
+  // =========================
+  // NEXT STEP
+  // =========================
+
+  async goToNextStep() {
+    await expect(this.nextStepButton).toBeVisible();
+    await expect(this.nextStepButton).toBeEnabled(); // 🔥 important
+    await this.nextStepButton.click();
   }
 
-  // ✅ Enter Specialist Amount
-  async enterSpecialistAmount(value: string = "20") {
-    await this.specialistAmountInput.fill(value);
-  }
+  // =========================
+  // FULL FLOW (CLEAN)
+  // =========================
 
-  // ✅ Go to Next Step (Prescription page)
- async goToNextStep() {
-  await this.nextStepButton.waitFor({ state: 'visible' });
-  await this.nextStepButton.click();
-}
-
-  // ✅ FULL FLOW (🔥 BEST PRACTICE)
   async completeTreatmentPlanFlow() {
     await this.verifyPageLoaded();
 
     await this.clickAddTreatmentStep();
 
-    await this.selectProcedure();
+    await this.selectTooth("55");
 
-    await this.enterPrice();
+    await this.selectProcedure("Entra");
 
-    await this.selectDate();
-
-    await this.clickAddSpecialist();
-
-    await this.selectSpecialist();
-
-    await this.enterSpecialistAmount();
+    await this.enterPrice("1000");
 
     await this.goToNextStep();
   }
